@@ -22,8 +22,21 @@ def blog_list(request):
             return Response(serializer.errors)
 
 
-@api_view(['GET'])
+@api_view(['GET','PUT','DELETE'])
 def blog_detail(request, pk):
-    blogs = Blog.objects.filter(is_public=True, pk=pk)
-    serializer = BlogSerializer(blogs, many=True)
-    return Response(serializer.data,  status=status.HTTP_200_OK)
+    if request.method == "GET":
+        blogs = Blog.objects.filter(is_public=True, pk=pk)
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data,  status=status.HTTP_200_OK)
+    if request.method == "PUT":
+        blog = Blog.objects.get(is_public=True, pk=pk)
+        serializer = BlogSerializer(blog, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,  status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors)
+    if request.method == "DELETE":
+        blog = Blog.objects.get( pk=pk)
+        blog.delete()
+        return Response()
