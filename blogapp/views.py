@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .models import Blog
+from .models import Blog, Category
 from rest_framework import status
-from .serializer import BlogSerializer
+from .serializer import BlogSerializer, CategorySerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -11,6 +11,19 @@ from rest_framework.views import APIView
     # Class Based Views
     #
 """
+
+class CategoryListView(APIView):
+    def get(self, request):
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data,  status=status.HTTP_200_OK)
+    
+class CategoryDetailView(APIView):
+    def get(self, request, pk):
+        category = Category.objects.get(pk=pk)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data,  status=status.HTTP_200_OK)
+
 # GET, POST Request Accepted  
 class BlogListView(APIView):
     def get(self, request):
